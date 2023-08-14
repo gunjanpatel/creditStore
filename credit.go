@@ -46,7 +46,7 @@ func (employee *Employee) RemoveCredits(amount float64) (float64, error) {
 		return 0.0, errors.New("you can't remove negative numbers")
 	}
 
-	if amount < employee.credits {
+	if amount > employee.credits {
 		return 0.0, errors.New("you can't remove more credits than the account has")
 	}
 
