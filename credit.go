@@ -1,37 +1,60 @@
 package creditStore
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+)
 
 type Account struct {
-	FirtName string
-	LastName string
+	FirstName string
+	LastName  string
 }
 
 type Employee struct {
 	Account
-	Credits float64
+	credits float64
 }
 
-func (account *Account) ChangeFirstName(name string) {
-	account.FirtName = name
+func (e Employee) String() string {
+	return fmt.Sprintf("Name: %s %s\nCredits: %.2f\n", e.FirstName, e.LastName, e.credits)
 }
 
-func (account *Account) ChangeLastName(name string) {
-	account.LastName = name
+func CreateEmployee(firstName string, lastName string, credit float64) (*Employee, error) {
+	return &Employee{Account{firstName, lastName}, credit}, nil
 }
 
-func (employee *Employee) AddCredits(credit float64) {
-	employee.Credits += credit
+func (account *Account) ChangeFirstName(value string) {
+	account.FirstName = value
 }
 
-func (employee *Employee) RemoveCredits(credit float64) {
-	employee.Credits -= credit
+func (account *Account) ChangeLastName(value string) {
+	account.LastName = value
 }
 
-func (employee Employee) CheckCredits() string {
-	return fmt.Sprintf("%.2f DKK", employee.Credits)
+func (employee *Employee) AddCredits(amount float64) (float64, error) {
+	if amount <= 0.0 {
+		return employee.credits, errors.New("invalid credit amount")
+	}
+
+	employee.credits += amount
+
+	return employee.credits, nil
 }
 
-func (employee Employee) String() string {
-	return fmt.Sprintf("%s %s", employee.FirtName, employee.LastName)
+func (employee *Employee) RemoveCredits(amount float64) (float64, error) {
+	if amount <= 0.0 {
+		return 0.0, errors.New("you can't remove negative numbers")
+	}
+
+	if amount < employee.credits {
+		return 0.0, errors.New("you can't remove more credits than the account has")
+	}
+
+	employee.credits -= amount
+
+	return employee.credits, nil
+}
+
+func (employee Employee) CheckCredits() float64 {
+	return employee.credits
 }
